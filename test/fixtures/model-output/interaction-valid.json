@@ -1,0 +1,18 @@
+{
+  "mode": "delegate",
+  "userMessage": null,
+  "statusMessage": "I’m checking the runtime and the failing path now.",
+  "tasks": [
+    {
+      "id": "task-a",
+      "agentName": "runtime-debugger",
+      "purpose": "Find the failure cause",
+      "instructions": "Inspect the specified workspace and return the root cause with evidence.",
+      "workspaceBinding": "primary-repo",
+      "permissionProfile": "read",
+      "dependsOn": []
+    }
+  ],
+  "waitForTasks": true,
+  "memoryCandidates": []
+}

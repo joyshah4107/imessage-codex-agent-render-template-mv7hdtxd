@@ -1,0 +1,9 @@
+{
+  "taskId": "task-a",
+  "status": "failed",
+  "userSafeSummary": "The task failed.",
+  "artifacts": [],
+  "proposedActions": [],
+  "memoryCandidates": [],
+  "error": null
+}

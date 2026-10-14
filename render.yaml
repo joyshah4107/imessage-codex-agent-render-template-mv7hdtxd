@@ -1,0 +1,71 @@
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+#
+# iMessage Codex Agent on Render: one-click gallery template
+# Template: https://github.com/render-examples/imessage-codex-agent-render-template
+# Upstream: https://github.com/photon-hq/render-imessage-template
+#
+# Pattern: native-runtime (Node 22.12 + Express + Drizzle + pg-boss).
+# Multi-resource: web service + managed Postgres + persistent disk.
+# One instance is required: Codex credentials and workspaces live on the disk.
+# Apply prompts for zero secrets; owner phone, Photon, and ChatGPT are
+# configured from the deployed dashboard.
+
+previews:
+  generation: off
+
+projects:
+  - name: imessage-codex-agent-render-template
+    environments:
+      - name: production
+        services:
+          - type: web
+            name: imessage-codex-agent
+            runtime: node
+            plan: starter
+            region: oregon
+            numInstances: 1
+            autoDeployTrigger: off
+            # NODE_ENV=production makes npm omit devDependencies by default, but the
+            # TypeScript build and pre-deploy migration require the pinned dev tools.
+            buildCommand: npm ci --include=dev && npm run build
+            preDeployCommand: npm run db:migrate
+            startCommand: npm start
+            healthCheckPath: /healthz
+            # Render rejects custom shutdown delays on services with a persistent disk.
+            disk:
+              name: codex-data
+              mountPath: /var/data
+              sizeGB: 1
+            envVars:
+              - key: NODE_VERSION
+                value: "22.12.0"
+              - key: NODE_ENV
+                value: production
+
+              # Supplied automatically by the attached Render PostgreSQL database.
+              # Never replace this with a copied connection string.
+              - key: DATABASE_URL
+                fromDatabase:
+                  name: imessage-agent-db
+                  property: connectionString
+
+              - key: CODEX_HOME
+                value: /var/data/codex
+              - key: AGENT_WORKSPACE_ROOT
+                value: /var/data/workspaces
+              - key: CODEX_AUTH_MODE
+                value: chatgpt
+
+              - key: APP_ENCRYPTION_KEY
+                generateValue: true
+
+        databases:
+          - name: imessage-agent-db
+            databaseName: imessage_agent
+            user: imessage_agent
+            plan: basic-256mb
+            region: oregon
+            postgresMajorVersion: "18"
+            diskSizeGB: 15
+            connectionPool: none
+            ipAllowList: []

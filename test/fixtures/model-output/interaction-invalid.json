@@ -1,0 +1,9 @@
+{
+  "mode": "delegate",
+  "userMessage": null,
+  "statusMessage": null,
+  "tasks": [],
+  "waitForTasks": false,
+  "memoryCandidates": [],
+  "permissionProfile": "danger-full-access"
+}
